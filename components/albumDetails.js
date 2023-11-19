@@ -58,7 +58,7 @@ const selectedAlbum = albumCovers[decodedLink];
 const generateAlbumDetails = (album) => {
   console.log('album', album);
   return `
-    <div class="bg-light p-2 rounded d-md-flex">
+    <div class="bg-light p-2 rounded mb-4 d-md-flex">
       <img src="${album.imageUrl}" class="rounded album-cover-page" alt="${album.title}">
 
       <div class="p-3 w-100">
@@ -87,8 +87,8 @@ const generatePhotoHTML = (album) => {
 
   album.photos.forEach((photo, index) => {
     photosHTML += `
-      <div class="col-12 col-md-6 col-lg-4 mb-3">
-        <a href="#photoModal" data-bs-toggle="modal" data-bs-target="#photo${index + 1}">
+      <div class="col-12 col-md-6 col-lg-4 mb-3 mt-4">
+        <a href="#photoModal${index + 1}" data-bs-toggle="modal" data-bs-target="#photoModal${index + 1}">
           <img src="${photo}" class="rounded foto-album" alt="snowboarder">
         </a>
       </div>
@@ -97,6 +97,51 @@ const generatePhotoHTML = (album) => {
 
   return photosHTML;
 };
+
+const generateModalHTML = (album) => {
+  let modalHTML = '';
+
+  album.photos.forEach((photo, index) => {
+    modalHTML += `
+      <div class="modal fade" id="photoModal${index + 1}" tabindex="-1" aria-labelledby="imagemLabel${index + 1}" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="imagemLabel${index + 1}">${album.title}</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <div id="foto${index + 1}" class="carousel slide">
+                <div class="carousel-inner">
+                  ${album.photos
+                    .map(
+                      (img, idx) => `
+                        <div class="carousel-item ${idx === 0 ? 'active' : ''}">
+                          <img src="${img}" class="d-block w-100" alt="...">
+                        </div>
+                      `
+                    )
+                    .join('')}
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#foto${index + 1}" data-bs-slide="prev">
+                  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                  <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#foto${index + 1}" data-bs-slide="next">
+                  <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                  <span class="visually-hidden">Next</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  });
+
+  return modalHTML;
+};
+
 
 const albumDetailsContainer = document.getElementById('albumDetailsContainer');
 
@@ -110,8 +155,14 @@ if (selectedAlbum) {
   albumDetailsContainer.innerHTML = albumDetailsHTML;
 
   const photoGalleryHTML = generatePhotoHTML(selectedAlbum);
-  albumDetailsContainer.insertAdjacentHTML('beforeend', `<div class="row">${photoGalleryHTML}</div>`);
+  albumDetailsContainer.insertAdjacentHTML('beforeend', `
+    <h3 class="text-secondary">Galeria de Fotos</h3>
+    <div class="row">${photoGalleryHTML}</div>
+  `);
 
+  const modalGalleryHTML = generateModalHTML(selectedAlbum);
+  document.body.insertAdjacentHTML('beforeend', modalGalleryHTML);
+  
 } else {
   albumDetailsContainer.innerHTML = `
   <div class="d-flex justify-content-center align-items-center p-4">
