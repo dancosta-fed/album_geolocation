@@ -38,7 +38,7 @@ const albumCovers = {
     description: "Fotos tiradas por Dan Costa no sul da NZ.",
     date: "2020",
     link: "south_island",
-    location: "South Island, NZ",
+    location: "Queenstown, NZ",
     photos: [
       'https://res.cloudinary.com/dognkye6x/image/upload/v1695431057/IMG_7721_oh8xmn.jpg',
       'https://res.cloudinary.com/dognkye6x/image/upload/v1695430685/GOPR0819_jel6u9.jpg',
@@ -50,13 +50,21 @@ const albumCovers = {
   },
 };
 
+
 const params = new URLSearchParams(window.location.search);
 const title = params.get('link');
 const decodedLink = decodeURIComponent(title.replace(/\+/g, ' '));
 const selectedAlbum = albumCovers[decodedLink];
+const albumDetailsContainer = document.getElementById('albumDetailsContainer');
+
+import { MAPBOX_API_KEY } from '../env.js';
+
+mapboxgl.accessToken = MAPBOX_API_KEY ? MAPBOX_API_KEY : '';
+
+// Now use apiKey in your code
+
 
 const generateAlbumDetails = (album) => {
-  console.log('album', album);
   return `
     <div class="bg-light p-2 rounded mb-4 d-md-flex">
       <img src="${album.imageUrl}" class="rounded album-cover-page" alt="${album.title}">
@@ -142,10 +150,28 @@ const generateModalHTML = (album) => {
   return modalHTML;
 };
 
+const getCoordinatesFromLocation = async (locationName) => {
+  const response = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(locationName)}.json?access_token=${mapboxgl.accessToken}`);
+  const data = await response.json();
+  // Assuming the first result contains the coordinates
+  const coordinates = data.features[0].center;
+  return coordinates; // [longitude, latitude]
+};
 
-const albumDetailsContainer = document.getElementById('albumDetailsContainer');
+const createMap = (longitude, latitude) => {
+  const map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/mapbox/streets-v12',
+    center: [longitude, latitude],
+    zoom: 9
+  });
 
-console.log('selectedAlbum', selectedAlbum);
+
+  new mapboxgl.Marker()
+    .setLngLat([longitude, latitude])
+    .addTo(map);
+};
+
 if (selectedAlbum) {
   const navLink = document.querySelector('.navbar-nav .nav-link');
   navLink.textContent = selectedAlbum.title;
@@ -156,13 +182,38 @@ if (selectedAlbum) {
 
   const photoGalleryHTML = generatePhotoHTML(selectedAlbum);
   albumDetailsContainer.insertAdjacentHTML('beforeend', `
-    <h3 class="text-secondary">Galeria de Fotos</h3>
+    <h3 class="text-secondary text-center">Galeria de Fotos</h3>
     <div class="row">${photoGalleryHTML}</div>
   `);
 
   const modalGalleryHTML = generateModalHTML(selectedAlbum);
   document.body.insertAdjacentHTML('beforeend', modalGalleryHTML);
-  
+
+  getCoordinatesFromLocation(selectedAlbum.location)
+  .then(coordinates => {
+    console.log('Coordinates:', coordinates);
+      // Check if the map container exists
+      let mapContainer = document.getElementById('map');
+
+      // If the map container doesn't exist, create it
+      if (!mapContainer) {
+        mapContainer = document.createElement('div');
+        mapContainer.id = 'map';
+        albumDetailsContainer.insertAdjacentElement('afterend', mapContainer);
+
+        const locationTitle = document.createElement('h3');
+        locationTitle.classList.add('text-secondary', 'text-center', 'mt-4', 'mb-4');
+        locationTitle.textContent = 'Localização';
+        albumDetailsContainer.insertAdjacentElement('afterend', locationTitle);
+      }
+
+      // Proceed to create the map
+        createMap(coordinates[0], coordinates[1]);
+  })
+  .catch(error => {
+    console.error('Error:', error);
+  });
+
 } else {
   albumDetailsContainer.innerHTML = `
   <div class="d-flex justify-content-center align-items-center p-4">

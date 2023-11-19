@@ -1,5 +1,8 @@
 # album_geolocation
 
+## **OBSERVAÇÃO**
+Eu escondi a api do mapa, caso use este código, será necessário criar um arquivo env.js e colocar sua api key, ou colocar sua chave manualmente nos arquivos.
+
 **Estruturas de Dados**
 ##
 Você deve estruturar os dados para a montagem da sua aplicação. Utilize o projeto de exemplo do JSONServer, faça uma cópia para o seu trabalho. No arquivo db.json, você deve criar as suas estruturas de dados. 

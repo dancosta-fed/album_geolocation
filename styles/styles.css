@@ -1,3 +1,9 @@
+#map { 
+  height: 400px;
+  width: 80%;
+  margin: 0 auto; 
+}
+
 .modal {
   height: 500px;
 }
