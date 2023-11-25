@@ -5,24 +5,47 @@ let ALBUMS = [];
 document.addEventListener('DOMContentLoaded', function() {
   console.log('DOM carregado com sucesso!');
 
-  fetch('https://my-json-server.typicode.com/dancosta-fed/album_jsonServer/db')
-    .then(response => response.json())
-    .then(data => {
-      ALBUMS = data.albums;
-    })
-    .catch(error => {
-      console.error('Erro ao fazer o fetch dos dados: ', error);
-    });
+  const storedData = localStorage.getItem('albumsData');
+
+  if (!storedData) {
+    fetch('https://my-json-server.typicode.com/dancosta-fed/album_jsonServer/db')
+      .then(response => response.json())
+      .then(data => {
+
+      localStorage.setItem('albumsData', JSON.stringify(data));
+      const albumsData = JSON.parse(localStorage.getItem('albumsData'));
+
+        ALBUMS = albumsData.albums;
+        const params = new URLSearchParams(window.location.search);
+        const title = params.get('link');
+        const decodedLink = decodeURIComponent(title.replace(/\+/g, ' '));
+    
+        const findAlbum = ALBUMS.find(album => album.link === decodedLink);
+        setSelectedAlbum(findAlbum);
+      })
+      .catch(error => {
+        console.error('Erro ao fazer o fetch dos dados: ', error);
+      });
+  }
+
+  if (storedData) {
+    const albumsData = JSON.parse(storedData);
+    ALBUMS = albumsData.albums;
+
+    const params = new URLSearchParams(window.location.search);
+    const title = params.get('link');
+    const decodedLink = decodeURIComponent(title.replace(/\+/g, ' '));
+
+    const findAlbum = ALBUMS.find(album => album.link === decodedLink);
+
+    setSelectedAlbum(findAlbum);
+    
+  }
 });
 
-const params = new URLSearchParams(window.location.search);
-const title = params.get('link');
-const decodedLink = decodeURIComponent(title.replace(/\+/g, ' '));
-const selectedAlbum = ALBUMS[decodedLink];
+
 const albumDetailsContainer = document.getElementById('albumDetailsContainer');
 
-console.log('ALBUMS:', ALBUMS);
-console.log('Selected Album:', selectedAlbum);
 
 import { MAPBOX_API_KEY } from '../env.js';
 
@@ -139,55 +162,57 @@ const createMap = (longitude, latitude) => {
     .addTo(map);
 };
 
-if (selectedAlbum) {
-  const navLink = document.querySelector('.navbar-nav .nav-link');
-  navLink.textContent = selectedAlbum.title;
-  navLink.href = `albumDetails.html?link=${selectedAlbum.link}`;
-
-  const albumDetailsHTML = generateAlbumDetails(selectedAlbum);
-  albumDetailsContainer.innerHTML = albumDetailsHTML;
-
-  const photoGalleryHTML = generatePhotoHTML(selectedAlbum);
-  albumDetailsContainer.insertAdjacentHTML('beforeend', `
-    <h3 class="text-secondary text-center">Galeria de Fotos</h3>
-    <div class="row">${photoGalleryHTML}</div>
-  `);
-
-  const modalGalleryHTML = generateModalHTML(selectedAlbum);
-  document.body.insertAdjacentHTML('beforeend', modalGalleryHTML);
-
-  getCoordinatesFromLocation(selectedAlbum.location)
-  .then(coordinates => {
-    console.log('Coordinates:', coordinates);
-      // Check if the map container exists
-      let mapContainer = document.getElementById('map');
-
-      // If the map container doesn't exist, create it
-      if (!mapContainer) {
-        mapContainer = document.createElement('div');
-        mapContainer.id = 'map';
-        albumDetailsContainer.insertAdjacentElement('afterend', mapContainer);
-
-        const locationTitle = document.createElement('h3');
-        locationTitle.classList.add('text-secondary', 'text-center', 'mt-4', 'mb-4');
-        locationTitle.textContent = 'Localização';
-        albumDetailsContainer.insertAdjacentElement('afterend', locationTitle);
-      }
-
-      // Proceed to create the map
-        createMap(coordinates[0], coordinates[1]);
-  })
-  .catch(error => {
-    console.error('Error:', error);
-  });
-
-} else {
-  albumDetailsContainer.innerHTML = `
-  <div class="d-flex justify-content-center align-items-center p-4">
-    <div class="text-center d-flex flex-column align-items-center">
-      <h2 class="text-primary fw-bold mb-4">Status 404</h2>
-      <h3 class="text-danger">Album não foi encontrado</h3>
+const setSelectedAlbum = (album) => {
+  if (album) {
+    const navLink = document.querySelector('.navbar-nav .nav-link');
+    navLink.textContent = album.title;
+    navLink.href = `albumDetails.html?link=${album.link}`;
+  
+    const albumDetailsHTML = generateAlbumDetails(album);
+    albumDetailsContainer.innerHTML = albumDetailsHTML;
+  
+    const photoGalleryHTML = generatePhotoHTML(album);
+    albumDetailsContainer.insertAdjacentHTML('beforeend', `
+      <h3 class="text-secondary text-center">Galeria de Fotos</h3>
+      <div class="row">${photoGalleryHTML}</div>
+    `);
+  
+    const modalGalleryHTML = generateModalHTML(album);
+    document.body.insertAdjacentHTML('beforeend', modalGalleryHTML);
+  
+    getCoordinatesFromLocation(album.location)
+    .then(coordinates => {
+      console.log('Coordinates:', coordinates);
+        // Check if the map container exists
+        let mapContainer = document.getElementById('map');
+  
+        // If the map container doesn't exist, create it
+        if (!mapContainer) {
+          mapContainer = document.createElement('div');
+          mapContainer.id = 'map';
+          albumDetailsContainer.insertAdjacentElement('afterend', mapContainer);
+  
+          const locationTitle = document.createElement('h3');
+          locationTitle.classList.add('text-secondary', 'text-center', 'mt-4', 'mb-4');
+          locationTitle.textContent = 'Localização';
+          albumDetailsContainer.insertAdjacentElement('afterend', locationTitle);
+        }
+  
+        // Proceed to create the map
+          createMap(coordinates[0], coordinates[1]);
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+  
+  } else {
+    albumDetailsContainer.innerHTML = `
+    <div class="d-flex justify-content-center align-items-center p-4">
+      <div class="text-center d-flex flex-column align-items-center">
+        <h2 class="text-primary fw-bold mb-4">Status 404</h2>
+        <h3 class="text-danger">Album não foi encontrado</h3>
+      </div>
     </div>
-  </div>
-  `;
-}
+    `;
+  }
+};
