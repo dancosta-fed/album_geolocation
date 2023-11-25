@@ -1,7 +1,8 @@
 
 document.addEventListener('DOMContentLoaded', function() {
-  console.log('DOM carregado com sucesso!');
+  const storedData = localStorage.getItem('albumsData');
 
+  if (!storedData) {
   fetch('https://my-json-server.typicode.com/dancosta-fed/album_jsonServer/db')
     .then(response => response.json())
     .then(data => {
@@ -16,6 +17,14 @@ document.addEventListener('DOMContentLoaded', function() {
     .catch(error => {
       console.error('Erro ao fazer o fetch dos dados: ', error);
     });
+  }
+
+  if (storedData) {
+    const albumsData = JSON.parse(storedData);
+    generateAlbums(albumsData);
+    handleDestaqueClick(albumsData.albums);
+    checkInitialDestaque(albumsData.albums);
+  }
 });
 
 const generateAlbums = (albumsData) => {
@@ -99,9 +108,8 @@ const handleDestaqueClick = (albums) => {
       localStorage.setItem('albumsData', JSON.stringify({ albums }));
 
       const updatedData = JSON.parse(localStorage.getItem('albumsData'));
-      console.log(updatedData);
       checkInitialDestaque(updatedData.albums);
-
+      location.reload();
     });
   });
 };

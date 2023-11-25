@@ -7,8 +7,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
   fetch('https://my-json-server.typicode.com/dancosta-fed/album_jsonServer/db')
     .then(response => response.json())
-    .then(albums => {
-      ALBUMS = albums;
+    .then(data => {
+      ALBUMS = data.albums;
     })
     .catch(error => {
       console.error('Erro ao fazer o fetch dos dados: ', error);
@@ -20,6 +20,9 @@ const title = params.get('link');
 const decodedLink = decodeURIComponent(title.replace(/\+/g, ' '));
 const selectedAlbum = ALBUMS[decodedLink];
 const albumDetailsContainer = document.getElementById('albumDetailsContainer');
+
+console.log('ALBUMS:', ALBUMS);
+console.log('Selected Album:', selectedAlbum);
 
 import { MAPBOX_API_KEY } from '../env.js';
 

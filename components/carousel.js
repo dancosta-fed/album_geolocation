@@ -1,22 +1,13 @@
-// Object containing image URLs
-// const destaques = {
-//   image1: "https://res.cloudinary.com/dognkye6x/image/upload/v1695386211/IMG_4847_zomx8h.jpg",
-//   image2: "https://res.cloudinary.com/dognkye6x/image/upload/v1691336468/_MG_4958_qtyhx0.jpg",
-//   image3: "https://res.cloudinary.com/dognkye6x/image/upload/v1695386675/IMG_5243_bh2zxk.jpg",
-//   image4: "https://res.cloudinary.com/dognkye6x/image/upload/v1695386148/oaks-shore-33_s1fykx.jpg",
-//   image5: "https://res.cloudinary.com/dognkye6x/image/upload/v1691336422/B2B054D1-FFDE-461D-966D-A0AADE49932C_ms8yfv.jpg",
-//   image6: "https://res.cloudinary.com/dognkye6x/image/upload/v1695386672/IMG_5260_kdyrca.jpg"
-// };
 
 
 document.addEventListener('DOMContentLoaded', function() {
-  console.log('DOM carregado com sucesso!');
+  const storedData = localStorage.getItem('albumsData');
 
+  if (!storedData) {
   fetch('https://my-json-server.typicode.com/dancosta-fed/album_jsonServer/db')
     .then(response => response.json())
-    .then(albums => {
-      console.log(albums);
-
+    .then(data => {
+      const albums = data.albums;
       for (const album in albums) {
         if (albums.hasOwnProperty(album)) {
           if (albums[album].destaque === true) {
@@ -30,10 +21,24 @@ document.addEventListener('DOMContentLoaded', function() {
     .catch(error => {
       console.error('Erro ao fazer o fetch dos dados: ', error);
     });
+  }
+
+  if (storedData) {
+    const albumsData = JSON.parse(storedData);
+    for (const album in albumsData.albums) {
+      if (albumsData.albums.hasOwnProperty(album)) {
+        if (albumsData.albums[album].destaque === true) {
+          generateCarouselItems(albumsData.albums[album].photos)
+          break;
+        }
+      }
+    }
+  }
 });
 
 const generateCarouselItems = (destaques) => {
   const carouselInner = document.querySelector('.carousel-inner');
+  carouselInner.innerHTML = '';
 
   for (const key in destaques) {
     if (Object.hasOwnProperty.call(destaques, key)) {
@@ -58,3 +63,16 @@ const generateCarouselItems = (destaques) => {
   }
 }
 
+const updateCarouselFromLocalStorage = () => {
+  const storedData = JSON.parse(localStorage.getItem('albumsData'));
+
+  if (storedData && storedData.destaque === true) {
+    generateCarouselItems(storedData.photos);
+  }
+}
+
+window.addEventListener('albumsData', (event) => {
+  if (event.key === 'albumsData') {
+    updateCarouselFromLocalStorage();
+  }
+});
