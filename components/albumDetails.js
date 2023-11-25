@@ -60,9 +60,20 @@ const generateAlbumDetails = (album) => {
       <img src="${album.imageUrl}" class="rounded album-cover-page" alt="${album.title}">
 
       <div class="p-3 w-100">
-        <div>
-          <h3 class="text-secondary">Descrição</h3>
-          <p class="text-secondary">${album.description}</p>
+        <div class="d-flex justify-content-between">
+          <div>
+            <h3 class="text-secondary">Descrição</h3>
+            <p class="text-secondary">${album.description}</p>
+          </div>
+
+          <div id="destaque">
+          ${
+            album.destaque 
+            ? '<i class="fas fa-heart fs-2 heartBtn"></i>'
+            : '<i class="far fa-heart fs-2 heartBtn"></i>'
+          }
+          </div>
+          
         </div>
         <div class="d-flex justify-content-between">
           <div>
@@ -216,3 +227,4 @@ const setSelectedAlbum = (album) => {
     `;
   }
 };
+
