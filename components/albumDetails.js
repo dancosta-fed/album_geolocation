@@ -1,60 +1,24 @@
 // Object containing album image URLs and details
-const albumCovers = {
-  fotos_snowboarding: {
-    imageUrl: "https://res.cloudinary.com/dognkye6x/image/upload/v1695386211/IMG_4847_zomx8h.jpg",
-    title: "Fotos Snowboarding",
-    description: "Fotos tiradas por Dan Costa em Queenstown, NZ.",
-    date: "2021",
-    link: "fotos_snowboarding",
-    location: "Queenstown, NZ",
-    photos: [
-      'https://res.cloudinary.com/dognkye6x/image/upload/v1695386212/IMG_4751_ywotuh.jpg',
-      'https://res.cloudinary.com/dognkye6x/image/upload/v1695386210/IMG_4745_vk0xzg.jpg',
-      'https://res.cloudinary.com/dognkye6x/image/upload/v1695386200/IMG_7427_x8soly.jpg',
-      'https://res.cloudinary.com/dognkye6x/image/upload/v1695386153/oaks-shore-51_inmkgp.jpg',
-      'https://res.cloudinary.com/dognkye6x/image/upload/v1695386148/oaks-shore-33_s1fykx.jpg',
-      'https://res.cloudinary.com/dognkye6x/image/upload/v1695386143/oaks-shore-29_i7bai2.jpg',
-    ]
-  },
-  fotos_Stadium: {
-    imageUrl: "https://res.cloudinary.com/dognkye6x/image/upload/v1691336468/_MG_4958_qtyhx0.jpg",
-    title: "Fotos Estádio",
-    description: "Fotos tiradas por Dan Costa em Estádios de Futebol.",
-    date: "2023",
-    link: "fotos_Stadium",
-    location: "Belo Horizonte, MG",
-    photos: [
-      'https://res.cloudinary.com/dognkye6x/image/upload/v1691336520/IMG_2156_oyfnpj.png',
-      'https://res.cloudinary.com/dognkye6x/image/upload/v1691336422/B2B054D1-FFDE-461D-966D-A0AADE49932C_ms8yfv.jpg',
-      'https://res.cloudinary.com/dognkye6x/image/upload/v1691336468/_MG_4958_qtyhx0.jpg',
-      'https://res.cloudinary.com/dognkye6x/image/upload/v1691336039/IMG_8525_lb5fil.jpg',
-      'https://res.cloudinary.com/dognkye6x/image/upload/v1684164835/IMG_0693_obyj0t.png',
-      'https://res.cloudinary.com/dognkye6x/image/upload/v1684164789/IMG_1455_vg0bgq.png',
-    ]
-  },
-  fotos_Blue_Pools: {
-    imageUrl: "https://res.cloudinary.com/dognkye6x/image/upload/v1695431057/IMG_7721_oh8xmn.jpg",
-    title: "South Island, NZ",
-    description: "Fotos tiradas por Dan Costa no sul da NZ.",
-    date: "2020",
-    link: "south_island",
-    location: "Queenstown, NZ",
-    photos: [
-      'https://res.cloudinary.com/dognkye6x/image/upload/v1695431057/IMG_7721_oh8xmn.jpg',
-      'https://res.cloudinary.com/dognkye6x/image/upload/v1695430685/GOPR0819_jel6u9.jpg',
-      'https://res.cloudinary.com/dognkye6x/image/upload/v1695430901/IMG_1911_hvctml.jpg',
-      'https://res.cloudinary.com/dognkye6x/image/upload/v1695430505/IMG_5256-Edit_r2ab1b.jpg',
-      'https://res.cloudinary.com/dognkye6x/image/upload/v1695430204/IMG_5616_gmhujj.jpg',
-      'https://res.cloudinary.com/dognkye6x/image/upload/v1695419277/IMG_2712_g7gl38.jpg',
-    ]
-  },
-};
 
+let ALBUMS = [];
+
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('DOM carregado com sucesso!');
+
+  fetch('https://my-json-server.typicode.com/dancosta-fed/album_jsonServer/db')
+    .then(response => response.json())
+    .then(albums => {
+      ALBUMS = albums;
+    })
+    .catch(error => {
+      console.error('Erro ao fazer o fetch dos dados: ', error);
+    });
+});
 
 const params = new URLSearchParams(window.location.search);
 const title = params.get('link');
 const decodedLink = decodeURIComponent(title.replace(/\+/g, ' '));
-const selectedAlbum = albumCovers[decodedLink];
+const selectedAlbum = ALBUMS[decodedLink];
 const albumDetailsContainer = document.getElementById('albumDetailsContainer');
 
 import { MAPBOX_API_KEY } from '../env.js';

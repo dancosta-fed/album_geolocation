@@ -1,12 +1,36 @@
 // Object containing image URLs
-const destaques = {
-  image1: "https://res.cloudinary.com/dognkye6x/image/upload/v1695386211/IMG_4847_zomx8h.jpg",
-  image2: "https://res.cloudinary.com/dognkye6x/image/upload/v1691336468/_MG_4958_qtyhx0.jpg",
-  image3: "https://res.cloudinary.com/dognkye6x/image/upload/v1695386675/IMG_5243_bh2zxk.jpg",
-  image4: "https://res.cloudinary.com/dognkye6x/image/upload/v1695386148/oaks-shore-33_s1fykx.jpg",
-  image5: "https://res.cloudinary.com/dognkye6x/image/upload/v1691336422/B2B054D1-FFDE-461D-966D-A0AADE49932C_ms8yfv.jpg",
-  image6: "https://res.cloudinary.com/dognkye6x/image/upload/v1695386672/IMG_5260_kdyrca.jpg"
-};
+// const destaques = {
+//   image1: "https://res.cloudinary.com/dognkye6x/image/upload/v1695386211/IMG_4847_zomx8h.jpg",
+//   image2: "https://res.cloudinary.com/dognkye6x/image/upload/v1691336468/_MG_4958_qtyhx0.jpg",
+//   image3: "https://res.cloudinary.com/dognkye6x/image/upload/v1695386675/IMG_5243_bh2zxk.jpg",
+//   image4: "https://res.cloudinary.com/dognkye6x/image/upload/v1695386148/oaks-shore-33_s1fykx.jpg",
+//   image5: "https://res.cloudinary.com/dognkye6x/image/upload/v1691336422/B2B054D1-FFDE-461D-966D-A0AADE49932C_ms8yfv.jpg",
+//   image6: "https://res.cloudinary.com/dognkye6x/image/upload/v1695386672/IMG_5260_kdyrca.jpg"
+// };
+
+
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('DOM carregado com sucesso!');
+
+  fetch('https://my-json-server.typicode.com/dancosta-fed/album_jsonServer/db')
+    .then(response => response.json())
+    .then(albums => {
+      console.log(albums);
+
+      for (const album in albums) {
+        if (albums.hasOwnProperty(album)) {
+          if (albums[album].destaque === true) {
+            generateCarouselItems(albums[album].photos)
+            break;
+          }
+        }
+      }
+
+    })
+    .catch(error => {
+      console.error('Erro ao fazer o fetch dos dados: ', error);
+    });
+});
 
 const generateCarouselItems = (destaques) => {
   const carouselInner = document.querySelector('.carousel-inner');
@@ -34,4 +58,3 @@ const generateCarouselItems = (destaques) => {
   }
 }
 
-generateCarouselItems(destaques);
