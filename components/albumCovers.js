@@ -1,8 +1,8 @@
 
 document.addEventListener('DOMContentLoaded', function() {
-  const storedData = localStorage.getItem('albumsData');
+  // clear local storage
+  localStorage.clear();
 
-  if (!storedData) {
   fetch('https://my-json-server.typicode.com/dancosta-fed/album_jsonServer/db')
     .then(response => response.json())
     .then(data => {
@@ -21,7 +21,8 @@ document.addEventListener('DOMContentLoaded', function() {
     .catch(error => {
       console.error('Erro ao fazer o fetch dos dados: ', error);
     });
-  }
+    
+  const storedData = localStorage.getItem('albumsData');
 
   if (storedData) {
     const albumsData = JSON.parse(storedData);
