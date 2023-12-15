@@ -29,8 +29,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
 const generateAlbums = (albumsData) => {
   const albumsContainer = document.querySelector('.albumCoversContainer');
-  
-  albumsData?.albums?.forEach(album => {
+  if (!albumsData.albums) {
+    const noAlbumsMessage = document.createElement('p');
+    noAlbumsMessage.classList.add('text-secondary');
+    noAlbumsMessage.textContent = 'Nenhum álbum encontrado.';
+    albumsContainer.appendChild(noAlbumsMessage);
+    return;
+  }
+
+  albumsData.albums.forEach(album => {
     const albumDiv = document.createElement('div');
     albumDiv.classList.add('bg-light', 'p-2', 'rounded', 'm-1', 'album-styles');
     
