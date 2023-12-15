@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', function() {
 const generateAlbums = (albumsData) => {
   const albumsContainer = document.querySelector('.albumCoversContainer');
   
-  albumsData.albums.forEach(album => {
+  albumsData?.albums?.forEach(album => {
     const albumDiv = document.createElement('div');
     albumDiv.classList.add('bg-light', 'p-2', 'rounded', 'm-1', 'album-styles');
     
