@@ -10,6 +10,10 @@ document.addEventListener('DOMContentLoaded', function() {
     localStorage.setItem('albumsData', JSON.stringify(data));
     const albumsData = JSON.parse(localStorage.getItem('albumsData'));
 
+
+    console.log('fetch', albumsData);
+    console.log('fetch album', albumsData.albums);
+
       generateAlbums(albumsData);
       handleDestaqueClick(albumsData.albums);
       checkInitialDestaque(albumsData.albums);
@@ -29,7 +33,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
 const generateAlbums = (albumsData) => {
   const albumsContainer = document.querySelector('.albumCoversContainer');
+
+  console.log('data', albumsData);
+
   if (!albumsData.albums) {
+    
     const noAlbumsMessage = document.createElement('p');
     noAlbumsMessage.classList.add('text-secondary');
     noAlbumsMessage.textContent = 'Nenhum álbum encontrado.';
