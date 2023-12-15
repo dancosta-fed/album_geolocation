@@ -5,28 +5,26 @@ let ALBUMS = [];
 document.addEventListener('DOMContentLoaded', function() {
   console.log('DOM carregado com sucesso!');
 
-  const storedData = localStorage.getItem('albumsData');
+  fetch('https://my-json-server.typicode.com/dancosta-fed/album_jsonServer/db')
+    .then(response => response.json())
+    .then(data => {
 
-  if (!storedData) {
-    fetch('https://my-json-server.typicode.com/dancosta-fed/album_jsonServer/db')
-      .then(response => response.json())
-      .then(data => {
+    localStorage.setItem('albumsData', JSON.stringify(data));
+    const albumsData = JSON.parse(localStorage.getItem('albumsData'));
 
-      localStorage.setItem('albumsData', JSON.stringify(data));
-      const albumsData = JSON.parse(localStorage.getItem('albumsData'));
+      ALBUMS = albumsData.albums;
+      const params = new URLSearchParams(window.location.search);
+      const title = params.get('link');
+      const decodedLink = decodeURIComponent(title.replace(/\+/g, ' '));
+  
+      const findAlbum = ALBUMS.find(album => album.link === decodedLink);
+      setSelectedAlbum(findAlbum);
+    })
+    .catch(error => {
+      console.error('Erro ao fazer o fetch dos dados: ', error);
+    });
 
-        ALBUMS = albumsData.albums;
-        const params = new URLSearchParams(window.location.search);
-        const title = params.get('link');
-        const decodedLink = decodeURIComponent(title.replace(/\+/g, ' '));
-    
-        const findAlbum = ALBUMS.find(album => album.link === decodedLink);
-        setSelectedAlbum(findAlbum);
-      })
-      .catch(error => {
-        console.error('Erro ao fazer o fetch dos dados: ', error);
-      });
-  }
+    const storedData = localStorage.getItem('albumsData');
 
   if (storedData) {
     const albumsData = JSON.parse(storedData);
